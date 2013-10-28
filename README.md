@@ -6,7 +6,7 @@ It's very simple. It just installs the tomcat6 package.
 
 Requirements
 ------------
-Requires Enterprise Linux distro. Tested on rhel and CentOS.
+Requires Enterprise Linux or Debian distro. Tested on Ubuntu 12.0.4, RHEL 6 and CentOS 6.
 
 Usage
 ------------
