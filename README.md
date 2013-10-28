@@ -11,7 +11,7 @@ Requires Enterprise Linux or Debian distro. Tested on Ubuntu 12.0.4, RHEL 6 and 
 Usage
 ------------
 
-Just include `appserv-tomcat` in the cookbook for your app that needs the Java Web Service environment created:
+Just include `appserv-tomcat` in the cookbook for your app that needs a Tomcat environment created:
 
 ```ruby
 include_recipe "appserv-tomcat"
