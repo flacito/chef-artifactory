@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'appserv-tomcat::default' do
+describe 'appserv-artifactory::default' do
 
   let (:chef_run) do
     ChefSpec::Runner.new do |node|
