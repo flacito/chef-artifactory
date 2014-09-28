@@ -7,17 +7,6 @@
 # All rights reserved - Do Not Redistribute
 #
 
-# If it's an HA node, have to mount NFS
-if (node[:artifactory][:is_ha_node]) 
-  directory node[:artifactory][:ha_mount_point] do
-    action :create
-    not_if do ::File.directory?(node[:artifactory][:ha_mount_point]) end
-  end
-  
-  execute "mount #{node[:artifactory][:ha_nfs_server]} #{[:artifactory][:ha_mount_point]}" do
-  end
-end
-
 # Pull down the Artifactory RPM
 remote_file node[:artifactory][:rpm_local_path] do
   source node[:artifactory][:rpm_url]
@@ -44,6 +33,16 @@ rpm_package node[:artifactory][:rpm_package_name] do
   action :install
 end
 
+# Configure an external database if indicated
+if (node[:artifactory][:user_external_db])
+  include_recipe "artifactory::db"
+end
+
+# If it's an HA node, include the HA recipe
+if (node[:artifactory][:is_ha_node]) 
+  include_recipe "artifactory::ha"
+end
+
 # Start up the service
 service node[:artifactory][:service_name] do
   action :start
@@ -63,3 +62,15 @@ ruby_block "Waiting for Artifactory service" do
     end
   end
 end
+
+# Install the Pro license
+if (node[:artifactory][:install_pro]) 
+  include_recipe "artifactory::installpro"
+end
+
+# Import the configuration file from the cookbook
+if (node[:artifactory][:import_config]) 
+  include_recipe "artifactory::importcfg"
+end
+
+
