@@ -34,12 +34,17 @@ rpm_package node[:artifactory][:rpm_package_name] do
 end
 
 # Configure an external database if indicated
-if (node[:artifactory][:user_external_db])
+if (node[:artifactory][:is_external_db])
   include_recipe "artifactory::db"
 end
 
+# Install the Pro license
+if (node[:artifactory][:is_install_pro]) 
+  include_recipe "artifactory::installpro"
+end
+
 # If it's an HA node, include the HA recipe
-if (node[:artifactory][:is_ha_node]) 
+if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_ha_node]) 
   include_recipe "artifactory::ha"
 end
 
@@ -63,13 +68,8 @@ ruby_block "Waiting for Artifactory service" do
   end
 end
 
-# Install the Pro license
-if (node[:artifactory][:install_pro]) 
-  include_recipe "artifactory::installpro"
-end
-
 # Import the configuration file from the cookbook
-if (node[:artifactory][:import_config]) 
+if (node[:artifactory][:is_install_pro] and node[:artifactory][:import_config]) 
   include_recipe "artifactory::importcfg"
 end
 

@@ -1,0 +1,4 @@
+node.id=<%= @ha_node_id %>
+cluster.home=<%= @ha_mount_point %>
+context.url=http://<%= node['ipaddress'] =%>:8081/artifactory/
+primary=<%= @is_primary_ha_node %>

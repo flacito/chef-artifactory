@@ -6,7 +6,7 @@ directory "#{node[:artifactory][:home]}/etc" do
 end
 
 # Create the connection definition
-template "/var/opt/jfrog/artifactory/etc/storage.properties" do
+template "#{node[:artifactory][:etc_dir]}/storage.properties" do
   source "#{node[:artifactory][:database_type]}.properties.erb"
   variables ({
     :db_host => node[:artifactory][:db_host],
