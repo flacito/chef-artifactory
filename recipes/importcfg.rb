@@ -6,11 +6,6 @@ cookbook_file node[:artifactory][:cookbook_config_archive_name] do
   action :create_if_missing
 end
 
-# Make sure we have unzip installed, should skip if we do
-package "unzip" do
-  action :install
-end
-
 # Extract the archive
 execute "unzip #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -d #{node[:artifactory][:import_dir]}" do
    not_if do ::File.directory?(node[:artifactory][:import_dir]) end

@@ -1,21 +1,33 @@
-default[:artifactory][:home] = "/opt/jfrog/artifactory"
-default[:artifactory][:etc_dir] = "/var/opt/jfrog/artifactory/etc"
-default[:artifactory][:user] = "artifactory"
-
 # Knobs
+default[:artifactory][:is_package_install] = false # set to false for manual archive install.  HUGE pain, but some shops can't handle the default RPM (e.g. user ID not artifactory 'cause too long')
 default[:artifactory][:is_external_db] = true
 default[:artifactory][:is_install_pro] = true
 default[:artifactory][:is_ha_node] = true  #requires install_pro and a license
 default[:artifactory][:import_config] = true  #requires install_pro and a license
+default[:artifactory][:is_local_firewall] = true
 
 # General installation attributes
+default[:artifactory][:jfrog_base_dir] = "/opt/jfrog"
+default[:artifactory][:home] = "#{node[:artifactory][:jfrog_base_dir]}/artifactory"
+default[:artifactory][:user] = "artifactory"
+default[:artifactory][:service_name] = "artifactory"
 default[:artifactory][:rpm_url] = "http://172.16.18.1/jfrog/artifactory-powerpack-rpm-3.3.1.rpm"
 default[:artifactory][:rpm_local_path] = "/tmp/artifactory-powerpack-rpm-3.3.1.rpm"
 default[:artifactory][:rpm_package_name] = "artifactory"
-default[:artifactory][:service_name] = "artifactory"
+default[:artifactory][:archive_name] = "artifactory-powerpack-standalone-3.3.1.zip"
+default[:artifactory][:archive_extract_dir] = "artifactory-powerpack-3.3.1"
+default[:artifactory][:archive_url] = "http://172.16.18.1/jfrog/#{node[:artifactory][:archive_name]}"
+default[:artifactory][:archive_local_path] = "/tmp/#{node[:artifactory][:archive_name]}"
 default[:artifactory][:import_base_dir] = "/tmp"
 default[:artifactory][:import_dir] = "#{node[:artifactory][:import_path_root]}/config"
 default[:artifactory][:cookbook_config_archive_name] = "config.zip"
+
+# RPM and manual installs have the etc dir in different places
+if (node[:artifactory][:is_package_install])
+  default[:artifactory][:etc_dir] = "/var/opt/jfrog/artifactory/etc"
+else
+  default[:artifactory][:etc_dir] = node[:artifactory][:home]
+end
 
 # HA node attributes
 default[:artifactory][:ha_node_id] = "art1"

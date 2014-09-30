@@ -30,10 +30,7 @@ template "#{node[:artifactory][:etc_dir]}/ha-node.properties" do
     :ha_mount_point => node[:artifactory][:ha_mount_point],
     :is_primary_ha_node => node[:artifactory][:is_primary_ha_node],
   })
-end
-
-# Make Artifactory user owner of HA properties file
-execute "chown #{node[:artifactory][:user]} #{node[:artifactory][:etc_dir]}/ha-node.properties" do
+  user node[:artifactory][:user]
 end
 
 # Restrict access to HA properties file

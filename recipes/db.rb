@@ -3,6 +3,7 @@
 directory "#{node[:artifactory][:home]}/etc" do
   action :create
   not_if do ::File.directory?("#{node[:artifactory][:home]}/etc") end
+  user node[:artifactory][:user]
 end
 
 # Create the connection definition
@@ -16,11 +17,13 @@ template "#{node[:artifactory][:etc_dir]}/storage.properties" do
     :db_user => data_bag_item("artifactory","db")["db_user"],
     :db_password => data_bag_item("artifactory","db")["db_password"]
   })
+  user node[:artifactory][:user]
 end
 
 # Pull down the right JDBC driver
 remote_file node[:artifactory][:jdbc_driver_local_path] do
   source node[:artifactory][:jdbc_driver_url]
   action :create
+  user node[:artifactory][:user]
 end
 
