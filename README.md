@@ -6,9 +6,15 @@ Allows you to configure a standalone Artifactory server or an HA cluster (HA req
 
 Take a look at the default attributes. There are several overrides you will need to make to successfully converge in your environmnent. Examples: where is your RPM or ZIP archive for the Artifactory binary? where is your JDBC driver if you're going to do an external DB or HA? 
 
-There are a few knobs at the top of the attributes that let you flip the install behavior. These should be self evident. 
+There are a few knobs at the top of [the attributes](https://github.com/flacito/chef-artifactory/blob/master/attributes/default.rb) that let you flip the install behavior. These should be self evident. 
 
-Finally you'll need an 'artifactory' data bag created with the following data bag items:
+See Usage below for more details.
+
+**Todo:** 
+
+* Chefspec (Berkshelf stuff too)
+* Test Kitchen
+ 
 
 Requirements
 ------------
