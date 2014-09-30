@@ -1,3 +1,21 @@
+#
+# Cookbook Name:: artifactory
+# default attributes
+# 
+# Copyright 2014 Brian Webb
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 # Knobs
 default[:artifactory][:is_package_install] = false # set to false for manual archive install.  HUGE pain, but some shops can't handle the default RPM (e.g. user ID not artifactory 'cause too long')
 default[:artifactory][:is_external_db] = true

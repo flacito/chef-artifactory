@@ -2,14 +2,41 @@
 =======================
 Chef cookbook for configuring a JFrog Artifactory application server.
 
-More README TBD. 
+Allows you to configure a standalone Artifactory server or an HA cluster (HA requires an external DB and an NFS share). Cookbook supports either RPM install or manual ZIP file install.
+
+Take a look at the default attributes. There are several overrides you will need to make to successfully converge in your environmnent. Examples: where is your RPM or ZIP archive for the Artifactory binary? where is your JDBC driver if you're going to do an external DB or HA? 
+
+There are a few knobs at the top of the attributes that let you flip the install behavior. These should be self evident. 
+
+Finally you'll need an 'artifactory' data bag created with the following data bag items:
 
 Requirements
 ------------
-Requires Enterprise Linux or Debian distro. Tested on Ubuntu 12.0.4, RHEL 6 and CentOS 7.
+Requires Enterprise Linux or Debian distro. Tested on CentOS 7.
+
+Requires JDK 1.7 or higher.
 
 Usage
 ------------
+Just change the attributes to meet your needs and bootstrap with the artifactory::default recipe, or add the artifactory::default recipe to a role or run list.
+
+If you want an external DB or HA, then data_bags/artifactory/db.json
+> {
+>   "id":"db",
+>   "db_host":"your host fqdn",
+>   "db_name":"artifactory db",
+>   "db_user":"artifactory db user",
+>   "db_password":"artifactory db password"
+> }
+
+If you want HA, then data_bags/artifactory/nfs.json
+> {
+>   "id":"nfs",
+>   "nfs_host":"172.16.18.203",
+>   "nfs_directory":"/var/nfs/artifactory"
+> }
+
+Finally, there's a files/default/config.zip file there for you if you want to import an existing configueration of Artifactory. The one in the recipe just adds Ruby gems and Restlet as remote repos. See the Artifactory documentation on exporting a configuration. Doing so as an archive and no artifacts is recommended; otherwise, you'll have a _huge_ config.zip file to store in the cookbook and that's no good.
 
 License and Authors
 -------------------
