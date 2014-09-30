@@ -34,7 +34,7 @@ rpm_package node[:artifactory][:rpm_package_name] do
 end
 
 # Configure an external database if indicated
-if (node[:artifactory][:is_external_db])
+if (node[:artifactory][:is_external_db] or node[:artifactory][:is_ha_node])
   include_recipe "artifactory::db"
 end
 
@@ -57,9 +57,10 @@ end
 ruby_block "Waiting for Artifactory service" do
   block do
     artup = false
+    result = nil
     while not artup do
       begin
-        RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
+        result = RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
         artup = true
       rescue
         sleep(2)
@@ -69,7 +70,7 @@ ruby_block "Waiting for Artifactory service" do
 end
 
 # Import the configuration file from the cookbook
-if (node[:artifactory][:is_install_pro] and node[:artifactory][:import_config]) 
+if (node[:artifactory][:is_install_pro] and node[:artifactory][:import_config] and !(node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])) 
   include_recipe "artifactory::importcfg"
 end
 

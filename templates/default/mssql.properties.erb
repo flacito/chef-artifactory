@@ -1,0 +1,5 @@
+type=mssql
+driver=com.microsoft.sqlserver.jdbc.SQLServerDriver
+url=jdbc:sqlserver://<%= @db_host %>:1433;databaseName=<%= @db_name %>;sendStringParametersAsUnicode=false;applicationName=Artifactory Binary Repository
+username=<%= @db_user %>
+password=<%= @db_password %>

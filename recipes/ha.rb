@@ -15,7 +15,7 @@ directory "#{node[:artifactory][:ha_mount_point]}" do
 end
 
 # Put the mount in fstab
-execute "echo '#{node[:artifactory][:nfs_host]}:#{node[:artifactory][:nfs_directory]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
+execute "echo '#{data_bag_item("artifactory", "nfs")["nfs_host"]}:#{data_bag_item("artifactory", "nfs")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
 end
 
 # Reload fstab

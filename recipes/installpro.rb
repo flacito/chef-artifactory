@@ -4,7 +4,7 @@ require 'rest-client'
 template "#{node[:artifactory][:etc_dir]}/artifactory.lic" do
   source "artifactory.lic.erb"
   variables ({
-    :pro_key => node[:artifactory][:pro_key],
+    :pro_key => node[:artifactory][:license]
   })
 end
 

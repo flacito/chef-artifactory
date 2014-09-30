@@ -6,13 +6,15 @@ directory "#{node[:artifactory][:home]}/etc" do
 end
 
 # Create the connection definition
+# db_databag = Chef::EncryptedDataBagItem.load("artifactory", "db")
+
 template "#{node[:artifactory][:etc_dir]}/storage.properties" do
   source "#{node[:artifactory][:database_type]}.properties.erb"
   variables ({
-    :db_host => node[:artifactory][:db_host],
-    :db_name => node[:artifactory][:db_name],
-    :db_user => node[:artifactory][:db_user],
-    :db_password => node[:artifactory][:db_password],
+    :db_host => data_bag_item("artifactory","db")["db_host"],
+    :db_name => data_bag_item("artifactory","db")["db_name"],
+    :db_user => data_bag_item("artifactory","db")["db_user"],
+    :db_password => data_bag_item("artifactory","db")["db_password"]
   })
 end
 
