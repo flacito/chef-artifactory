@@ -26,7 +26,7 @@ default[:artifactory][:cookbook_config_archive_name] = "config.zip"
 if (node[:artifactory][:is_package_install])
   default[:artifactory][:etc_dir] = "/var/opt/jfrog/artifactory/etc"
 else
-  default[:artifactory][:etc_dir] = node[:artifactory][:home]
+  default[:artifactory][:etc_dir] = "#{node[:artifactory][:home]}/etc"
 end
 
 # HA node attributes

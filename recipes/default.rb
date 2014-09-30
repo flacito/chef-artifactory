@@ -1,22 +1,23 @@
 #
-# Cookbook Name:: appserv-tomcat
+# Cookbook Name:: artifactory
 # Recipe:: default
 #
-# Copyright 2013, YOUR_COMPANY_NAME
+# Copyright 2014, Brian T. Webb
 #
 # All rights reserved - Do Not Redistribute
 #
 
-# Rsync required, should skip if already installed
+# Make sure we have rsync
 package "rsync" do
   action :install
 end
 
-# Make sure we have unzip installed, should skip if we do
+# Make sure we have unzip installed
 package "unzip" do
   action :install
 end
 
+# Local firewall settings if needed
 if (node[:artifactory][:is_local_firewall])
   # Add the Artifactory port to the firewall
   execute "firewall-cmd --zone=public --add-port=8081/tcp --permanent" do
@@ -27,56 +28,11 @@ if (node[:artifactory][:is_local_firewall])
   end
 end
 
+# Install base Artifactory 
 if (node[:artifactory][:is_package_install])
-  # Pull down the Artifactory RPM
-  remote_file node[:artifactory][:rpm_local_path] do
-    source node[:artifactory][:rpm_url]
-    action :create
-  end
-
-  # Install the Artifactory RPM
-  rpm_package node[:artifactory][:rpm_package_name] do
-    source node[:artifactory][:rpm_local_path]
-    options "-i"
-    action :install
-  end
+  include_recipe "artifactory::installrpm"
 else
-  # Create the JFrog base directory
-  directory node[:artifactory][:jfrog_base_dir] do
-    action :create
-  end
-
-  # Create the artifactory user
-  user node[:artifactory][:user] do
-    action :create
-    home node[:artifactory][:home]  
-    uid 1001
-  end
-
-  # Pull down the Artifactory archive
-  remote_file node[:artifactory][:archive_local_path] do
-    source node[:artifactory][:archive_url]
-    action :create
-    user node[:artifactory][:user]
-  end
-
-  # Extract Artifactory
-  execute "unzip #{node[:artifactory][:archive_name]}" do
-    cwd "/tmp"
-    user node[:artifactory][:user]
-    not_if { File.directory?("/tmp/#{node[:artifactory][:archive_extract_dir]}") }
-  end
-
-  # Move artifactory
-  execute "mv #{node[:artifactory][:archive_extract_dir]}/* #{node[:artifactory][:home]}" do
-    cwd "/tmp"
-    user node[:artifactory][:user]
-    not_if { File.directory?("#{node[:artifactory][:home]}/tomcat") }
-  end
-
-  # Install Artifactory service
-  execute "#{node[:artifactory][:home]}/bin/installService.sh" do
-  end
+  include_recipe "artifactory::installstandalone"
 end
 
 # Configure an external database if indicated
@@ -103,10 +59,9 @@ end
 ruby_block "Waiting for Artifactory service" do
   block do
     artup = false
-    result = nil
     while not artup do
       begin
-        result = RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
+        RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
         artup = true
       rescue
         sleep(2)
