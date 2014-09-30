@@ -42,6 +42,10 @@ If you want HA, then data_bags/artifactory/nfs.json
 >   "nfs_directory":"/var/nfs/artifactory"
 > }
 
+If you want to run Pro or HA, set the appropriate knob attributes to true and then make sure you have an license key as an attribute on your node (through JSON on bootstrap, or adding to node if you bootstrapped empty). Also, only one of the nodes should be primary and each node should have a node ID; do this will attributes in the same way you do the license. so for example:
+
+> "{artifactory":{"license":"the big old key","is_primary_ha_node":true,"ha_node_id":"art1"}}
+
 Finally, there's a files/default/config.zip file there for you if you want to import an existing configueration of Artifactory. The one in the recipe just adds Ruby gems and Restlet as remote repos. See the Artifactory documentation on exporting a configuration. Doing so as an archive and no artifacts is recommended; otherwise, you'll have a _huge_ config.zip file to store in the cookbook and that's no good.
 
 License and Authors
