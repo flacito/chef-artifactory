@@ -1,4 +1,4 @@
-name             'artifactory'
+name             'chef-artifactory'
 maintainer       'Brian Webb'
 maintainer_email 'btwebb@gmail.com'
 license          'All rights reserved'
