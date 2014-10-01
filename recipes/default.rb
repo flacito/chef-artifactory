@@ -40,24 +40,24 @@ end
 
 # Install base Artifactory 
 if (node[:artifactory][:is_package_install])
-  include_recipe "artifactory::installrpm"
+  include_recipe "chef-artifactory::installrpm"
 else
-  include_recipe "artifactory::installstandalone"
+  include_recipe "chef-artifactory::installstandalone"
 end
 
 # Configure an external database if indicated
 if (node[:artifactory][:is_external_db] or node[:artifactory][:is_ha_node])
-  include_recipe "artifactory::db"
+  include_recipe "chef-artifactory::db"
 end
 
 # Install the Pro license
 if (node[:artifactory][:is_install_pro]) 
-  include_recipe "artifactory::installpro"
+  include_recipe "chef-artifactory::installpro"
 end
 
 # If it's an HA node, include the HA recipe
 if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_ha_node]) 
-  include_recipe "artifactory::ha"
+  include_recipe "chef-artifactory::ha"
 end
 
 # Start up the service
@@ -82,7 +82,7 @@ end
 
 # Import the configuration file from the cookbook. Only do this if we have a pro license. If we're doing HA, only the primary needs the import.
 if (node[:artifactory][:is_install_pro] and node[:artifactory][:import_config] and !(node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])) 
-  include_recipe "artifactory::importcfg"
+  include_recipe "chef-artifactory::importcfg"
 end
 
 
