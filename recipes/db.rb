@@ -32,6 +32,7 @@ template "#{node[:artifactory][:etc_dir]}/storage.properties" do
   source "#{node[:artifactory][:database_type]}.properties.erb"
   variables ({
     :db_host => data_bag_item("artifactory","db")["db_host"],
+    :db_port => data_bag_item("artifactory","db")["db_port"],
     :db_name => data_bag_item("artifactory","db")["db_name"],
     :db_user => data_bag_item("artifactory","db")["db_user"],
     :db_password => data_bag_item("artifactory","db")["db_password"]
