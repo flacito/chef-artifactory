@@ -23,6 +23,6 @@ require 'rest-client'
 template "#{node[:artifactory][:etc_dir]}/artifactory.lic" do
   source "artifactory.lic.erb"
   variables ({
-    :pro_key => node[:artifactory][:license]
+    :pro_key => data_bag_item("artifactory","license")["licenses"][node[:artifactory][:ha_node_number] - 1]
   })
 end

@@ -34,7 +34,7 @@ directory "#{node[:artifactory][:ha_mount_point]}" do
 end
 
 # Put the mount in fstab
-execute "echo '#{data_bag_item("artifactory", "nfs")["nfs_host"]}:#{data_bag_item("artifactory", "nfs")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
+execute "echo '#{data_bag_item("artifactory", "ha")["nfs_host"]}:#{data_bag_item("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
 end
 
 # Reload fstab
@@ -45,7 +45,7 @@ end
 template "#{node[:artifactory][:etc_dir]}/ha-node.properties" do
   source "ha-node.properties.erb"
   variables ({
-    :ha_node_id => node[:artifactory][:ha_node_id],
+    :ha_node_id => "art#{node[:artifactory][:ha_node_number]}",
     :ha_mount_point => node[:artifactory][:ha_mount_point],
     :is_primary_ha_node => node[:artifactory][:is_primary_ha_node],
   })
