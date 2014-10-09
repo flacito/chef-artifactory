@@ -47,7 +47,7 @@ else
 end
 
 # HA node attributes
-default[:artifactory][:ha_node_number] = "1"
+default[:artifactory][:ha_node_number] = 1
 default[:artifactory][:is_primary_ha_node] = true
 default[:artifactory][:ha_mount_point] = "/mnt/artifactory"
 
