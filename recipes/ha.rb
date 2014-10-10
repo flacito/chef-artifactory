@@ -27,21 +27,7 @@ package "nfs-utils-lib" do
   action :install
 end
 
-# Create the mount point
-directory "#{node[:artifactory][:ha_mount_point]}" do
-  action :create
-  owner node[:artifactory][:user]
-end
-
-# Put the mount in fstab
-execute "echo '#{data_bag_item("artifactory", "ha")["nfs_host"]}:#{data_bag_item("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
-end
-
-# Reload fstab
-execute "mount -a" do
-end
-
-# Create the HA definition
+# Create the HA definition on the local node
 template "#{node[:artifactory][:etc_dir]}/ha-node.properties" do
   source "ha-node.properties.erb"
   variables ({
@@ -54,4 +40,49 @@ end
 
 # Restrict access to HA properties file
 execute "chmod 644 #{node[:artifactory][:etc_dir]}/ha-node.properties" do
+end
+
+# Create the mount point for the NFS share
+directory "#{node[:artifactory][:ha_mount_point]}" do
+  action :create
+  owner node[:artifactory][:user]
+end
+
+# Put the mount for the NFS share in fstab
+execute "echo '#{data_bag_item("artifactory", "ha")["nfs_host"]}:#{data_bag_item("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
+end
+
+# Reload fstab, making the NFS share active
+execute "mount -a" do
+end
+
+# Create the HA config directory on the NFS share
+directory "#{node[:artifactory][:ha_mount_point]}/ha-etc/" do
+  action :create
+  owner node[:artifactory][:user]
+  only_if { node[:artifactory][:is_primary_ha_node] }
+end
+
+# Create the cluster configuration on the NFS share
+template "#{node[:artifactory][:ha_mount_point]}/ha-etc/cluster.properties" do
+  source "cluster.properties.erb"
+  variables ({
+    :cluster_token => node[:artifactory][:cluster_token]
+  })
+  user node[:artifactory][:user]
+  only_if { node[:artifactory][:is_primary_ha_node] }
+end
+
+# Create the HA database definition on the NFS share
+template "#{node[:artifactory][:ha_mount_point]}/ha-etc/storage.properties" do
+  source "#{node[:artifactory][:database_type]}.properties.erb"
+  variables ({
+    :db_host => data_bag_item("artifactory","db")["db_host"],
+    :db_port => data_bag_item("artifactory","db")["db_port"],
+    :db_name => data_bag_item("artifactory","db")["db_name"],
+    :db_user => data_bag_item("artifactory","db")["db_user"],
+    :db_password => data_bag_item("artifactory","db")["db_password"]
+  })
+  user node[:artifactory][:user]
+  only_if { node[:artifactory][:is_primary_ha_node] }
 end

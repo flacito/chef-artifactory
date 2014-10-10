@@ -71,7 +71,9 @@ ruby_block "Waiting for Artifactory service" do
     artup = false
     while not artup do
       begin
-        RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
+        resp = RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
+        puts resp.code
+        puts resp
         artup = true
       rescue
         sleep(2)
@@ -81,8 +83,8 @@ ruby_block "Waiting for Artifactory service" do
 end
 
 # Import the configuration file from the cookbook. Only do this if we have a pro license. If we're doing HA, only the primary needs the import.
-if (node[:artifactory][:is_install_pro] and node[:artifactory][:import_config] and !(node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])) 
-  include_recipe "chef-artifactory::importcfg"
+if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_do_config] and !(node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])) 
+  include_recipe "chef-artifactory::config"
 end
 
 

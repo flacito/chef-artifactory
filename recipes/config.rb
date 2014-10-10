@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: artifactory
-# Recipe:: importcfg
+# Recipe:: config
 # 
 # Copyright 2014 Brian Webb
 # 
@@ -25,9 +25,24 @@ cookbook_file node[:artifactory][:cookbook_config_archive_name] do
   action :create_if_missing
 end
 
-# Extract the archive
-execute "unzip #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -d #{node[:artifactory][:import_dir]}" do
-   not_if do ::File.directory?(node[:artifactory][:import_dir]) end
+# Create the directory for the config import
+directory "#{node[:artifactory][:import_dir]}" do
+  action :create
+  owner node[:artifactory][:user]
+end
+
+# Extract the config archive
+execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -C #{node[:artifactory][:import_dir]}" do
+  user node[:artifactory][:user]
+end
+
+# Overlay the configuration
+template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
+  source "artifactory.config.xml.erb"
+  variables ({
+    :url_base => "http://#{data_bag_item("artifactory", "ha")["vip"]}/artifactory",
+  })
+  user node[:artifactory][:user]
 end
 
 # Import the configuration

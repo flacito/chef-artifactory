@@ -21,7 +21,7 @@ default[:artifactory][:is_package_install] = false # set to false for manual arc
 default[:artifactory][:is_external_db] = true
 default[:artifactory][:is_install_pro] = true
 default[:artifactory][:is_ha_node] = true  #requires install_pro and a license
-default[:artifactory][:import_config] = true  #requires install_pro and a license
+default[:artifactory][:is_do_config] = false  #requires install_pro and a license
 default[:artifactory][:is_local_firewall] = true
 
 # General installation attributes
@@ -36,8 +36,9 @@ default[:artifactory][:archive_name] = "artifactory-powerpack-standalone-3.3.1.z
 default[:artifactory][:archive_extract_dir] = "artifactory-powerpack-3.3.1"
 default[:artifactory][:archive_url] = "http://172.16.18.1/jfrog/artifactory-powerpack-standalone-3.3.1.zip"
 default[:artifactory][:archive_local_path] = "/tmp/artifactory-powerpack-standalone-3.3.1.zip"
+default[:artifactory][:import_base_dir] = "/tmp"
 default[:artifactory][:import_dir] = "/tmp/config"
-default[:artifactory][:cookbook_config_archive_name] = "config.zip"
+default[:artifactory][:cookbook_config_archive_name] = "artifactory_config_dir.tar.gz"
 
 # RPM and manual installs have the etc dir in different places
 if (node[:artifactory][:is_package_install])
@@ -50,6 +51,7 @@ end
 default[:artifactory][:ha_node_number] = 1
 default[:artifactory][:is_primary_ha_node] = true
 default[:artifactory][:ha_mount_point] = "/mnt/artifactory"
+default[:artifactory][:cluster_token] = "P%8$v%QGN6wrkV3uG=#Z+DtUm3Rz4^4="
 
 # External database attributes
 # Supported databases are "postgresql", "mysql", and "mssql"
