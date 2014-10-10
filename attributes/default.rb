@@ -21,7 +21,7 @@ default[:artifactory][:is_package_install] = false # set to false for manual arc
 default[:artifactory][:is_external_db] = true
 default[:artifactory][:is_install_pro] = true
 default[:artifactory][:is_ha_node] = true  #requires install_pro and a license
-default[:artifactory][:is_do_config] = false  #requires install_pro and a license
+default[:artifactory][:is_do_config] = true  #requires install_pro and a license
 default[:artifactory][:is_local_firewall] = true
 
 # General installation attributes

@@ -48,7 +48,7 @@ end
 # Import the configuration
 ruby_block "import Artifactory config" do
   block do
-    response = RestClient.post(
+    resp = RestClient.post(
       "http://admin:password@localhost:8081/artifactory/api/import/system", 
       {
         "importPath" => node[:artifactory][:import_dir],
@@ -59,7 +59,7 @@ ruby_block "import Artifactory config" do
       }.to_json, 
       :content_type => "application/json", :accept => "application/json"
     )
-    # result_json = JSON.parse(response)
-    # puts result_json
+    puts resp.code
+    puts resp
   end
 end
