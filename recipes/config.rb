@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 require 'rest-client'
 
 # Load the config archive onto the system
@@ -36,7 +35,7 @@ execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:c
   user node[:artifactory][:user]
 end
 
-# Overlay the configuration
+# The easy part: overlay the initial configuration from the Chef template
 template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
   source "artifactory.config.xml.erb"
   variables ({
@@ -44,6 +43,9 @@ template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
   })
   user node[:artifactory][:user]
 end
+
+# The hard part, parse the config XML and update in the right places
+include_recipe 'chef-artifactory::build_config'
 
 # Import the configuration
 ruby_block "import Artifactory config" do

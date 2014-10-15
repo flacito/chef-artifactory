@@ -18,10 +18,10 @@
 
 # Knobs
 default[:artifactory][:is_package_install] = false # set to false for manual archive install.  HUGE pain, but some shops can't handle the default RPM (e.g. user ID not artifactory 'cause too long')
-default[:artifactory][:is_external_db] = true
-default[:artifactory][:is_install_pro] = true
-default[:artifactory][:is_ha_node] = true  #requires install_pro and a license
-default[:artifactory][:is_do_config] = true  #requires install_pro and a license
+default[:artifactory][:is_external_db] = true # NOTE: you must have an artifactory data bag with a db data bag item in it for this to work, see README
+default[:artifactory][:is_install_pro] = true # NOTE: you must have an artifactory data bag with a licenses data bag item in it for this to work, see README
+default[:artifactory][:is_ha_node] = true  # requires install_pro and a license # NOTE: you must have an artifactory data bag with a ha data bag item in it for this to work, see README
+default[:artifactory][:is_do_config] = true  # requires install_pro and a license, if you want LDAP configure you must have an artifactory data bag with an ldap data bag item in it, see README
 default[:artifactory][:is_local_firewall] = true
 
 # General installation attributes
