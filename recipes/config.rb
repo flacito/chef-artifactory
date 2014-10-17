@@ -65,3 +65,39 @@ ruby_block "import Artifactory config" do
     puts resp
   end
 end
+
+# Add users
+users_dbag = data_bag_item("artifactory", "security")["users"]
+if (users_dbag)
+  ruby_block "Create Artifactory users" do
+    block do
+      users_dbag.each do |u| 
+        resp = RestClient.put(
+          "http://admin:password@localhost:8081/artifactory/api/security/users/#{u['name']}", 
+          {
+            "name" => u['name'],
+            "email" => u['email'],
+            "password" => u['password'],
+            "admin" => u['admin']
+          }.to_json, 
+          :content_type => "application/json", :accept => "application/json"
+        )
+        puts resp.code
+        puts resp
+      end
+    end
+  end
+end
+
+# Delete admin user if required
+if (data_bag_item("artifactory", "security")["deleteDefaultAdminUser"])
+  ruby_block "Delete admin user" do
+    block do
+      resp = RestClient.delete(
+        "http://admin:password@localhost:8081/artifactory/api/security/users/admin"
+      )
+      puts resp.code
+      puts resp
+    end
+  end
+end
