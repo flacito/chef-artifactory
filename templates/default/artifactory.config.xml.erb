@@ -13,7 +13,21 @@
         <passwordSettings>
             <encryptionPolicy>supported</encryptionPolicy>
         </passwordSettings>
-        <ldapSettings/>
+        <ldapSettings>
+          <ldapSetting>
+            <key><%= @key %></key>
+            <enabled><%= @enabled %></enabled>
+            <ldapUrl><%= @ldapUrl %></ldapUrl>
+            <search>
+              <searchFilter><%= @searchFilter %></searchFilter>
+              <searchBase><%= @searchBase %></searchBase>
+              <managerDn><%= @managerDn %></managerDn>
+              <managerPassword><%= @managerPassword %></managerPassword>
+            </search>
+            <autoCreateUser><%= @autoCreateUser %></autoCreateUser>
+            <emailAttribute><%= @emailAttribute %></emailAttribute>
+          </ldapSetting>
+        </ldapSettings>
         <ldapGroupSettings/>
     </security>
     <backups>

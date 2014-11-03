@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: artifactory
+# Cookbook Name:: ha
 # Recipe:: ha
 # 
 # Copyright 2014 Brian Webb
@@ -17,16 +17,6 @@
 # limitations under the License.
 
 
-# Install NFS utilities
-package "nfs-utils" do
-  action :install
-end
-
-# More NFS utilities 
-package "nfs-utils-lib" do
-  action :install
-end
-
 # Create the HA definition on the local node
 template "#{node[:artifactory][:etc_dir]}/ha-node.properties" do
   source "ha-node.properties.erb"
@@ -40,20 +30,6 @@ end
 
 # Restrict access to HA properties file
 execute "chmod 644 #{node[:artifactory][:etc_dir]}/ha-node.properties" do
-end
-
-# Create the mount point for the NFS share
-directory "#{node[:artifactory][:ha_mount_point]}" do
-  action :create
-  owner node[:artifactory][:user]
-end
-
-# Put the mount for the NFS share in fstab
-execute "echo '#{data_bag_item("artifactory", "ha")["nfs_host"]}:#{data_bag_item("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
-end
-
-# Reload fstab, making the NFS share active
-execute "mount -a" do
 end
 
 # Create the HA config directory on the NFS share

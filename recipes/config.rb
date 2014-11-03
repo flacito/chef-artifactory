@@ -36,16 +36,34 @@ execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:c
 end
 
 # The easy part: overlay the initial configuration from the Chef template
+dbagi = data_bag_item("artifactory", "security")["ldapSettings"][0]
 template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
   source "artifactory.config.xml.erb"
   variables ({
+    # URL Base for VIP
     :url_base => "http://#{data_bag_item("artifactory", "ha")["vip"]}/artifactory",
+
+    # LDAP setup
+    :key => dbagi['key'],
+    :enabled => dbagi['enabled'],
+    :ldapUrl => dbagi['ldapUrl'],
+    :searchFilter => dbagi['search']['searchFilter'],
+    :searchBase => dbagi['search']['searchBase'],
+    :managerDn => dbagi['search']['managerDn'],
+    :managerPassword => dbagi['search']['managerPassword'],
+    :autoCreateUser => dbagi['autoCreateUser'],
+    :emailAttribute => dbagi['emailAttribute'],
+
+    # SSO (kerberos)
+    :httpSsoProxied => dbagi['httpSsoProxiednoAutoUserCreation'],
+    :url_base => dbagi['noAutoUserCreation'],
+    :url_base => dbagi['remoteUserRequestVariable'],
   })
   user node[:artifactory][:user]
 end
 
 # The hard part, parse the config XML and update in the right places
-include_recipe 'chef-artifactory::build_config'
+#include_recipe 'chef-artifactory::build_config'
 
 # Import the configuration
 ruby_block "import Artifactory config" do
