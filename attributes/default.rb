@@ -22,7 +22,8 @@ default[:artifactory][:is_external_db] = true # NOTE: you must have an artifacto
 default[:artifactory][:is_install_pro] = true # NOTE: you must have an artifactory data bag with a licenses data bag item in it for this to work, see README
 default[:artifactory][:is_ha_node] = true  # requires install_pro and a license # NOTE: you must have an artifactory data bag with a ha data bag item in it for this to work, see README
 default[:artifactory][:is_do_config] = true  # requires install_pro and a license, if you want LDAP configure you must have an artifactory data bag with an ldap data bag item in it, see README
-default[:artifactory][:is_local_firewall] = true
+default[:artifactory][:is_local_firewall] = true # only used in CentOS 7 with the new firewall commands
+default[:artifactory][:is_setup_nfs] = true # set to true to have the cookbook set up your NFS on the node
 
 # General installation attributes
 default[:artifactory][:jfrog_base_dir] = "/opt/jfrog"

@@ -66,6 +66,8 @@ ruby_block "import Artifactory config" do
   end
 end
 
+have_admin = false
+
 # Add users
 users_dbag = data_bag_item("artifactory", "security")["users"]
 if (users_dbag)
@@ -82,22 +84,14 @@ if (users_dbag)
           }.to_json, 
           :content_type => "application/json", :accept => "application/json"
         )
+        puts "Added user to Artifactory #{u['name']}"
         puts resp.code
         puts resp
-      end
-    end
-  end
-end
 
-# Delete admin user if required
-if (data_bag_item("artifactory", "security")["deleteDefaultAdminUser"])
-  ruby_block "Delete admin user" do
-    block do
-      resp = RestClient.delete(
-        "http://admin:password@localhost:8081/artifactory/api/security/users/admin"
-      )
-      puts resp.code
-      puts resp
+        if u['admin']
+          have_admin = true
+        end
+      end
     end
   end
 end

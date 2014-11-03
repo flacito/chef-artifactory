@@ -16,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 # Make sure we have rsync
 package "rsync" do
   action :install
@@ -57,6 +56,9 @@ end
 
 # If it's an HA node, include the HA recipe
 if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_ha_node]) 
+  if (node[:artifactory][:is_setup_nfs]) 
+    include_recipe "chef-artifactory::nfs"
+  end
   include_recipe "chef-artifactory::ha"
 end
 
@@ -65,17 +67,49 @@ service node[:artifactory][:service_name] do
   action :start
 end
 
+
+# Default Artifactory admin login is admin/password
+have_admin = false
+user_id = 'admin'
+user_password = 'password'
+
 # Sleep a bit so the Artifactory service can come up
 ruby_block "Waiting for Artifactory service" do
   block do
+    require 'cgi'
+
+    # We need to use the right admin login ID. If we are in HA mode and doing config setup, the
+    # primary node will have already blown away the admin user ID if there were admin users in 
+    # the security databag. So we need to reach into the security data bag and get an admin ID.
+    if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_do_config] and node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])
+      users_dbag = data_bag_item("artifactory", "security")["users"]
+      if (users_dbag) 
+        users_dbag.each do |u| 
+          if (u['admin']) 
+            user_id = u['name']
+            user_password = u['password']
+            user_password = CGI.escape(user_password)
+            have_admin = true
+            puts "Retrieved #{user_id} for admin"
+            break
+          end
+        end      
+      end
+    end
+
+    puts "have_admin = #{have_admin}, deleteDefaultAdminUser=#{data_bag_item("artifactory", "security")["deleteDefaultAdminUser"]}"
     artup = false
     while not artup do
       begin
-        resp = RestClient.get("http://admin:password@localhost:8081/artifactory/api/system")
+        puts "Checking Artifactory status with login #{user_id}"
+        resp = RestClient.get("http://#{user_id}:#{user_password}@localhost:8081/artifactory/api/system")
         puts resp.code
         puts resp
+
         artup = true
-      rescue
+      rescue => e
+        puts 'Error waiting for Artifactory to start. This could be just a normal result of it is not up yet.'
+        puts e
         sleep(2)
       end
     end
@@ -85,6 +119,19 @@ end
 # Import the configuration file from the cookbook. Only do this if we have a pro license. If we're doing HA, only the primary needs the import.
 if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_do_config] and !(node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])) 
   include_recipe "chef-artifactory::config"
+end
+
+# Delete admin user if required. We only delete it if we have an admin user added from above
+if (have_admin and data_bag_item("artifactory", "security")["deleteDefaultAdminUser"])
+  ruby_block "Delete admin user" do
+    block do
+      resp = RestClient.delete(
+        "http://#{user_id}:#{user_password}@localhost:8081/artifactory/api/security/users/admin"
+      )
+      puts resp.code
+      puts resp
+    end
+  end
 end
 
 
