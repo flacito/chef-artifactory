@@ -36,7 +36,7 @@ execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:c
 end
 
 # The easy part: overlay the initial configuration from the Chef template
-dbagi = data_bag_item("artifactory", "security")["ldapSettings"][0]
+dbagi = Chef::EncryptedDataBagItem.load("artifactory", "security")["ldapSettings"][0]
 template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
   source "artifactory.config.xml.erb"
   variables ({

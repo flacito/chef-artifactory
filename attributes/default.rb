@@ -17,7 +17,7 @@
 # limitations under the License.
 
 # Knobs
-default[:artifactory][:is_package_install] = false # set to false for manual archive install.  HUGE pain, but some shops can't handle the default RPM (e.g. user ID not artifactory 'cause too long')
+default[:artifactory][:is_package_install] = true # set to false for manual archive install.  HUGE pain, but some shops can't handle the default RPM (e.g. user ID not artifactory 'cause too long')
 default[:artifactory][:is_external_db] = true # NOTE: you must have an artifactory data bag with a db data bag item in it for this to work, see README
 default[:artifactory][:is_install_pro] = true # NOTE: you must have an artifactory data bag with a licenses data bag item in it for this to work, see README
 default[:artifactory][:is_ha_node] = true  # requires install_pro and a license # NOTE: you must have an artifactory data bag with a ha data bag item in it for this to work, see README
@@ -28,7 +28,9 @@ default[:artifactory][:is_setup_nfs] = true # set to true to have the cookbook s
 # General installation attributes
 default[:artifactory][:jfrog_base_dir] = "/opt/jfrog"
 default[:artifactory][:home] = "/opt/jfrog/artifactory"
+default[:artifactory][:creat_user] = true
 default[:artifactory][:user] = "artifactory"
+default[:artifactory][:uid] = "60801"
 default[:artifactory][:service_name] = "artifactory"
 default[:artifactory][:rpm_url] = "http://172.16.18.1/jfrog/artifactory-powerpack-rpm-3.3.1.rpm"
 default[:artifactory][:rpm_local_path] = "/tmp/artifactory-powerpack-rpm-3.3.1.rpm"
@@ -45,7 +47,7 @@ default[:artifactory][:cookbook_config_archive_name] = "artifactory_config_dir.t
 if (node[:artifactory][:is_package_install])
   default[:artifactory][:etc_dir] = "/var/opt/jfrog/artifactory/etc"
 else
-  default[:artifactory][:etc_dir] = "/opt/jfrog/artifactory/etc"
+  default[:artifactory][:etc_dir] = "#{node[:artifactory][:home]}/artifactory/etc"
 end
 
 # HA node attributes

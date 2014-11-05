@@ -26,7 +26,8 @@ end
 user node[:artifactory][:user] do
   action :create
   home node[:artifactory][:home]  
-  uid 1001
+  uid node[:artifactory][:uid]
+  only_if { node[:artifactory][:create_user] }
 end
 
 # Pull down the Artifactory archive
@@ -46,10 +47,14 @@ end
 # Move artifactory
 execute "mv #{node[:artifactory][:archive_extract_dir]}/* #{node[:artifactory][:home]}" do
   cwd "/tmp"
-  user node[:artifactory][:user]
+  not_if { File.directory?("#{node[:artifactory][:home]}/tomcat") }
+end
+
+# Change owner of artifactory files
+execute "chown -R #{node[:artifactory][:user]} #{node[:artifactory][:home]}/*" do
   not_if { File.directory?("#{node[:artifactory][:home]}/tomcat") }
 end
 
 # Install Artifactory service
-execute "#{node[:artifactory][:home]}/bin/installService.sh" do
+execute "#{node[:artifactory][:home]}/bin/installService.sh #{node[:artifactory][:user]}" do
 end
