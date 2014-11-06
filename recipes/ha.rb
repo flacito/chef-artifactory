@@ -53,11 +53,11 @@ end
 template "#{node[:artifactory][:ha_mount_point]}/ha-etc/storage.properties" do
   source "#{node[:artifactory][:database_type]}.properties.erb"
   variables ({
-    :db_host => data_bag_item("artifactory","db")["db_host"],
-    :db_port => data_bag_item("artifactory","db")["db_port"],
-    :db_name => data_bag_item("artifactory","db")["db_name"],
-    :db_user => data_bag_item("artifactory","db")["db_user"],
-    :db_password => data_bag_item("artifactory","db")["db_password"]
+    :db_host => Chef::EncryptedDataBagItem.load("artifactory","db")["db_host"],
+    :db_port => Chef::EncryptedDataBagItem.load("artifactory","db")["db_port"],
+    :db_name => Chef::EncryptedDataBagItem.load("artifactory","db")["db_name"],
+    :db_user => Chef::EncryptedDataBagItem.load("artifactory","db")["db_user"],
+    :db_password => Chef::EncryptedDataBagItem.load("artifactory","db")["db_password"]
   })
   user node[:artifactory][:user]
   only_if { node[:artifactory][:is_primary_ha_node] }

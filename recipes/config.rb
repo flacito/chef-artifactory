@@ -87,7 +87,7 @@ end
 have_admin = false
 
 # Add users
-users_dbag = data_bag_item("artifactory", "security")["users"]
+users_dbag = Chef::EncryptedDataBagItem.load("artifactory", "security")["users"]
 if (users_dbag)
   ruby_block "Create Artifactory users" do
     block do
