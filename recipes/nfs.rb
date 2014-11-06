@@ -33,7 +33,7 @@ directory "#{node[:artifactory][:ha_mount_point]}" do
 end
 
 # Put the mount for the NFS share in fstab
-execute "echo '#{data_bag_item("artifactory", "ha")["nfs_host"]}:#{data_bag_item("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
+execute "echo '#{Chef::EncryptedDataBagItem.load("artifactory", "ha")["nfs_host"]}:#{Chef::EncryptedDataBagItem.load("artifactory", "ha")["nfs_directory"]}  #{node[:artifactory][:ha_mount_point]}   nfs      rw,auto,noatime,nolock,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0' >> /etc/fstab" do
 end
 
 # Reload fstab, making the NFS share active

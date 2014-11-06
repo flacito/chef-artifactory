@@ -97,7 +97,7 @@ ruby_block "Waiting for Artifactory service" do
       end
     end
 
-    puts "have_admin = #{have_admin}, deleteDefaultAdminUser=#{data_bag_item("artifactory", "security")["deleteDefaultAdminUser"]}"
+    puts "have_admin = #{have_admin}, deleteDefaultAdminUser=#{Chef::EncryptedDataBagItem.load("artifactory", "security")["deleteDefaultAdminUser"]}"
     artup = false
     while not artup do
       begin

@@ -41,7 +41,7 @@ template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
   source "artifactory.config.xml.erb"
   variables ({
     # URL Base for VIP
-    :url_base => "http://#{data_bag_item("artifactory", "ha")["vip"]}/artifactory",
+    :url_base => "http://#{Chef::EncryptedDataBagItem.load("artifactory", "ha")["vip"]}/artifactory",
 
     # LDAP setup
     :key => dbagi['key'],
