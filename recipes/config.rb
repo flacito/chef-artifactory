@@ -19,25 +19,25 @@
 require 'rest-client'
 
 # Load the config archive onto the system
-cookbook_file node[:artifactory][:cookbook_config_archive_name] do
-  path "#{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]}"
-  action :create_if_missing
-end
+# cookbook_file node[:artifactory][:cookbook_config_archive_name] do
+#   path "#{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]}"
+#   action :create_if_missing
+# end
 
 # Create the directory for the config import
-directory "#{node[:artifactory][:import_dir]}" do
-  action :create
-  owner node[:artifactory][:user]
-end
+# directory "#{node[:artifactory][:import_dir]}" do
+#   action :create
+#   owner node[:artifactory][:user]
+# end
 
 # Extract the config archive
-execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -C #{node[:artifactory][:import_dir]}" do
-  user node[:artifactory][:user]
-end
+# execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -C #{node[:artifactory][:import_dir]}" do
+#   user node[:artifactory][:user]
+# end
 
 # The easy part: overlay the initial configuration from the Chef template
 dbagi = Chef::EncryptedDataBagItem.load("artifactory", "security")["ldapSettings"][0]
-template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
+template "#{node[:artifactory][:import_base_dir]}/artifactory.config.xml" do
   source "artifactory.config.xml.erb"
   variables ({
     # URL Base for VIP
@@ -56,8 +56,8 @@ template "#{node[:artifactory][:import_dir]}/artifactory.config.xml" do
 
     # SSO (kerberos)
     :httpSsoProxied => dbagi['httpSsoProxiednoAutoUserCreation'],
-    :url_base => dbagi['noAutoUserCreation'],
-    :url_base => dbagi['remoteUserRequestVariable'],
+    :noAutoUserCreation => dbagi['noAutoUserCreation'],
+    :remoteUserRequestVariable => dbagi['remoteUserRequestVariable'],
   })
   user node[:artifactory][:user]
 end
@@ -69,16 +69,9 @@ end
 ruby_block "import Artifactory config" do
   block do
     resp = RestClient.post(
-      "http://admin:password@localhost:8081/artifactory/api/import/system", 
-      {
-        "importPath" => node[:artifactory][:import_dir],
-        "includeMetadata" => false,
-        "verbose" => false,
-        "failOnError" => true,
-        "failIfEmpty" => true
-      }.to_json, 
-      :content_type => "application/json", :accept => "application/json"
-    )
+      "http://admin:password@localhost:8081/artifactory/api/system/configuration", 
+      File.new("#{node[:artifactory][:import_base_dir]}/artifactory.config.xml").read(),
+      :content_type => "application/xml")
     puts resp.code
     puts resp
   end

@@ -40,7 +40,6 @@ default[:artifactory][:archive_extract_dir] = "artifactory-powerpack-3.3.1"
 default[:artifactory][:archive_url] = "http://172.16.18.1/jfrog/artifactory-powerpack-standalone-3.3.1.zip"
 default[:artifactory][:archive_local_path] = "/tmp/artifactory-powerpack-standalone-3.3.1.zip"
 default[:artifactory][:import_base_dir] = "/tmp"
-default[:artifactory][:import_dir] = "/tmp/config"
 default[:artifactory][:cookbook_config_archive_name] = "artifactory_config_dir.tar.gz"
 
 # RPM and manual installs have the etc dir in different places

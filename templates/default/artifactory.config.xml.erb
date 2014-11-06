@@ -19,10 +19,10 @@
             <enabled><%= @enabled %></enabled>
             <ldapUrl><%= @ldapUrl %></ldapUrl>
             <search>
-              <searchFilter><%= @searchFilter %></searchFilter>
+              <searchFilter><![CDATA[<%= @searchFilter %>]]></searchFilter>
               <searchBase><%= @searchBase %></searchBase>
               <managerDn><%= @managerDn %></managerDn>
-              <managerPassword><%= @managerPassword %></managerPassword>
+              <managerPassword><![CDATA[<%= @managerPassword %>]]></managerPassword>
             </search>
             <autoCreateUser><%= @autoCreateUser %></autoCreateUser>
             <emailAttribute><%= @emailAttribute %></emailAttribute>
