@@ -18,23 +18,6 @@
 
 require 'rest-client'
 
-# Load the config archive onto the system
-# cookbook_file node[:artifactory][:cookbook_config_archive_name] do
-#   path "#{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]}"
-#   action :create_if_missing
-# end
-
-# Create the directory for the config import
-# directory "#{node[:artifactory][:import_dir]}" do
-#   action :create
-#   owner node[:artifactory][:user]
-# end
-
-# Extract the config archive
-# execute "tar zxf #{node[:artifactory][:import_base_dir]}/#{node[:artifactory][:cookbook_config_archive_name]} -C #{node[:artifactory][:import_dir]}" do
-#   user node[:artifactory][:user]
-# end
-
 # The easy part: overlay the initial configuration from the Chef template
 dbagi = Chef::EncryptedDataBagItem.load("artifactory", "security")["ldapSettings"][0]
 template "#{node[:artifactory][:import_base_dir]}/artifactory.config.xml" do

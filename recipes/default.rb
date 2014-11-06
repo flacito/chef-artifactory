@@ -62,6 +62,24 @@ if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_ha_node])
   include_recipe "chef-artifactory::ha"
 end
 
+# If in HA mode, there's a chance there's another node starting that has a lock on the config.
+# Need to wait it out if so.
+if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_ha_node]) 
+  ruby_block "Wait for other nodes to finish" do
+    block do
+      nogo = true
+      while nogo do
+          if not ::File.exists?("#{node[:artifactory][:ha_mount_point]}/ha-data/artifactory.conversion.lock")
+            nogo = false
+          else
+            puts 'Another HA node has the lock. Sleeping for 2 seconds.'
+            sleep(2)
+          end
+      end
+    end
+  end
+end
+
 # Start up the service
 service node[:artifactory][:service_name] do
   action :start
@@ -109,7 +127,6 @@ ruby_block "Waiting for Artifactory service" do
         artup = true
       rescue => e
         puts 'Error waiting for Artifactory to start. This could be just a normal result of it is not up yet.'
-        puts e
         sleep(2)
       end
     end
