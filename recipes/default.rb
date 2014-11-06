@@ -82,7 +82,7 @@ ruby_block "Waiting for Artifactory service" do
     # primary node will have already blown away the admin user ID if there were admin users in 
     # the security databag. So we need to reach into the security data bag and get an admin ID.
     if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_do_config] and node[:artifactory][:is_ha_node] and !node[:artifactory][:is_primary_ha_node])
-      users_dbag = data_bag_item("artifactory", "security")["users"]
+      users_dbag = Chef::EncryptedDataBagItem.load("artifactory", "security")["users"]
       if (users_dbag) 
         users_dbag.each do |u| 
           if (u['admin']) 
@@ -122,7 +122,7 @@ if (node[:artifactory][:is_install_pro] and node[:artifactory][:is_do_config] an
 end
 
 # Delete admin user if required. We only delete it if we have an admin user added from above
-if (have_admin and data_bag_item("artifactory", "security")["deleteDefaultAdminUser"])
+if (have_admin and Chef::EncryptedDataBagItem.load("artifactory", "security")["deleteDefaultAdminUser"])
   ruby_block "Delete admin user" do
     block do
       resp = RestClient.delete(
